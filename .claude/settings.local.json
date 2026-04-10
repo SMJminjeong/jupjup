@@ -22,7 +22,8 @@
       "Bash(curl -s http://localhost:8081/?platform=ios -H \"Expo-Platform: ios\" -H \"Accept: application/expo+json,application/json\")",
       "Bash(npx kill-port:*)",
       "Bash(lsof -ti:8081)",
-      "Bash(xargs kill:*)"
+      "Bash(xargs kill:*)",
+      "Bash(rm D:/_STUDY/jupjup/apps/server/src/test-db.ts)"
     ]
   }
 }
