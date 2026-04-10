@@ -1,3 +1,4 @@
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import type { Category } from '@jupjup/types';
 import { CATEGORY_EMOJI, CATEGORY_LABEL } from '@jupjup/types';
 import { useMemo, useState } from 'react';
@@ -70,8 +71,9 @@ const KeywordsScreen = () => {
         onPress={() => setModalOpen(true)}
         style={[styles.addButton, { borderColor: colors.point }]}
       >
+        <MaterialCommunityIcons name="plus" size={18} color={colors.point} />
         <Text style={{ color: colors.point, fontSize: 15, fontWeight: '600' }}>
-          ＋ 키워드 추가
+          키워드 추가
         </Text>
       </TouchableOpacity>
 
@@ -97,8 +99,13 @@ const KeywordsScreen = () => {
                 ]}
               >
                 <Text style={{ color: colors.category[k.category], fontWeight: '600' }}>
-                  {k.text} ✕
+                  {k.text}
                 </Text>
+                <MaterialCommunityIcons
+                  name="close"
+                  size={14}
+                  color={colors.category[k.category]}
+                />
               </TouchableOpacity>
             ))}
           </View>
@@ -177,8 +184,10 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     borderWidth: 1.5,
     borderStyle: 'dashed',
+    flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
+    gap: 6,
   },
   groupHeader: {
     flexDirection: 'row',
@@ -190,7 +199,14 @@ const styles = StyleSheet.create({
   groupTitle: { fontSize: 15, fontWeight: '700' },
   groupCount: { fontSize: 13 },
   chipsRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
-  chip: { paddingHorizontal: 12, paddingVertical: 6, borderRadius: 20 },
+  chip: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 20,
+  },
   modalBackdrop: {
     flex: 1,
     backgroundColor: 'rgba(0,0,0,0.5)',

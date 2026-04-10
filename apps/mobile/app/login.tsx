@@ -1,3 +1,4 @@
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -32,7 +33,11 @@ const LoginScreen = () => {
           style={[styles.kakaoButton, { backgroundColor: colors.kakao }]}
           onPress={handleKakaoLogin}
         >
-          <Text style={[styles.kakaoIcon, { color: colors.kakaoText }]}>💬</Text>
+          <MaterialCommunityIcons
+            name="chat"
+            size={20}
+            color={colors.kakaoText}
+          />
           <Text style={[styles.kakaoText, { color: colors.kakaoText }]}>
             카카오로 계속하기
           </Text>
@@ -77,7 +82,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     gap: 8,
   },
-  kakaoIcon: { fontSize: 18 },
   kakaoText: { fontSize: 16, fontWeight: '700' },
   terms: { fontSize: 12, textAlign: 'center', marginTop: 16 },
   termsLink: { textDecorationLine: 'underline' },

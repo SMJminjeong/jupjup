@@ -1,3 +1,4 @@
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import type { Category } from '@jupjup/types';
 import { router } from 'expo-router';
 import { useEffect, useMemo, useState } from 'react';
@@ -40,11 +41,19 @@ const HomeFeedScreen = () => {
       <View style={[styles.header, { borderBottomColor: colors.border }]}>
         <Text style={[styles.logoText, { color: colors.textPrimary }]}>송줍줍</Text>
         <View style={styles.headerActions}>
-          <TouchableOpacity onPress={() => router.push('/search')} hitSlop={8}>
-            <Text style={{ fontSize: 22 }}>🔍</Text>
+          <TouchableOpacity
+            onPress={() => router.push('/search')}
+            hitSlop={8}
+            accessibilityLabel="검색"
+          >
+            <MaterialCommunityIcons name="magnify" size={24} color={colors.textPrimary} />
           </TouchableOpacity>
-          <TouchableOpacity onPress={() => router.push('/add')} hitSlop={8}>
-            <Text style={{ fontSize: 22 }}>＋</Text>
+          <TouchableOpacity
+            onPress={() => router.push('/add')}
+            hitSlop={8}
+            accessibilityLabel="스크랩 추가"
+          >
+            <MaterialCommunityIcons name="plus" size={26} color={colors.textPrimary} />
           </TouchableOpacity>
         </View>
       </View>

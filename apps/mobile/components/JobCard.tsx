@@ -1,3 +1,4 @@
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import type { Scrap } from '@jupjup/types';
 import { calculateDDay, formatDDay } from '@jupjup/utils';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
@@ -71,12 +72,25 @@ const JobCard = ({ scrap, onPress, onBookmark }: JobCardProps) => {
       <View style={[styles.divider, { backgroundColor: colors.border }]} />
 
       <View style={styles.footerRow}>
-        <TouchableOpacity onPress={() => onBookmark(scrap.id)} hitSlop={8}>
+        <TouchableOpacity
+          onPress={() => onBookmark(scrap.id)}
+          hitSlop={8}
+          style={styles.bookmarkRow}
+          accessibilityLabel={scrap.isBookmarked ? '저장 해제' : '저장하기'}
+        >
+          <MaterialCommunityIcons
+            name={scrap.isBookmarked ? 'bookmark' : 'bookmark-outline'}
+            size={18}
+            color={scrap.isBookmarked ? colors.point : colors.textTertiary}
+          />
           <Text style={{ color: scrap.isBookmarked ? colors.point : colors.textTertiary }}>
-            {scrap.isBookmarked ? '★ 저장됨' : '☆ 저장하기'}
+            {scrap.isBookmarked ? '저장됨' : '저장하기'}
           </Text>
         </TouchableOpacity>
-        <Text style={{ color: colors.point, fontWeight: '600' }}>원문 보기 →</Text>
+        <View style={styles.linkRow}>
+          <Text style={{ color: colors.point, fontWeight: '600' }}>원문 보기</Text>
+          <MaterialCommunityIcons name="chevron-right" size={18} color={colors.point} />
+        </View>
       </View>
     </TouchableOpacity>
   );
@@ -115,6 +129,8 @@ const styles = StyleSheet.create({
   tagText: { fontSize: 12 },
   divider: { height: 1, marginVertical: spacing.md },
   footerRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
+  bookmarkRow: { flexDirection: 'row', alignItems: 'center', gap: 4 },
+  linkRow: { flexDirection: 'row', alignItems: 'center', gap: 2 },
 });
 
 export default JobCard;

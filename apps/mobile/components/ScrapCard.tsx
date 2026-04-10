@@ -1,3 +1,4 @@
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import type { Scrap } from '@jupjup/types';
 import { formatRelativeDate } from '@jupjup/utils';
 import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
@@ -71,15 +72,16 @@ const ScrapCard = ({ scrap, onPress, onBookmark }: ScrapCardProps) => {
             </View>
           ))}
         </View>
-        <TouchableOpacity onPress={() => onBookmark(scrap.id)} hitSlop={8}>
-          <Text
-            style={{
-              fontSize: 20,
-              color: scrap.isBookmarked ? colors.point : colors.textTertiary,
-            }}
-          >
-            {scrap.isBookmarked ? '★' : '☆'}
-          </Text>
+        <TouchableOpacity
+          onPress={() => onBookmark(scrap.id)}
+          hitSlop={8}
+          accessibilityLabel={scrap.isBookmarked ? '북마크 해제' : '북마크'}
+        >
+          <MaterialCommunityIcons
+            name={scrap.isBookmarked ? 'bookmark' : 'bookmark-outline'}
+            size={22}
+            color={scrap.isBookmarked ? colors.point : colors.textTertiary}
+          />
         </TouchableOpacity>
       </View>
     </TouchableOpacity>

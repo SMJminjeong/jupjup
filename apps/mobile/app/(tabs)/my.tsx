@@ -1,3 +1,4 @@
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -123,7 +124,11 @@ const MenuItem = ({
 }) => (
   <TouchableOpacity style={styles.menuItem} onPress={onPress} disabled={!onPress}>
     <Text style={{ fontSize: 16, color: danger ? colors.danger : colors.textPrimary }}>{label}</Text>
-    <Text style={{ color: colors.textTertiary }}>{trailing ?? (onPress ? '›' : '')}</Text>
+    {trailing ? (
+      <Text style={{ color: colors.textTertiary }}>{trailing}</Text>
+    ) : onPress ? (
+      <MaterialCommunityIcons name="chevron-right" size={20} color={colors.textTertiary} />
+    ) : null}
   </TouchableOpacity>
 );
 

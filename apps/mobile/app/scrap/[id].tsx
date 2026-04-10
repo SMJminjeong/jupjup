@@ -1,3 +1,4 @@
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useLocalSearchParams } from 'expo-router';
 import * as WebBrowser from 'expo-web-browser';
 import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
@@ -83,9 +84,23 @@ const ScrapDetailScreen = () => {
       </ScrollView>
 
       <SafeAreaView edges={['bottom']} style={[styles.actionBar, { backgroundColor: colors.bgPrimary, borderTopColor: colors.border }]}>
-        <TouchableOpacity onPress={() => toggleBookmark(scrap.id)} style={styles.bookmarkBtn}>
-          <Text style={{ color: scrap.isBookmarked ? colors.point : colors.textSecondary }}>
-            {scrap.isBookmarked ? '★ 저장됨' : '☆ 저장하기'}
+        <TouchableOpacity
+          onPress={() => toggleBookmark(scrap.id)}
+          style={styles.bookmarkBtn}
+          accessibilityLabel={scrap.isBookmarked ? '북마크 해제' : '북마크'}
+        >
+          <MaterialCommunityIcons
+            name={scrap.isBookmarked ? 'bookmark' : 'bookmark-outline'}
+            size={20}
+            color={scrap.isBookmarked ? colors.point : colors.textSecondary}
+          />
+          <Text
+            style={{
+              color: scrap.isBookmarked ? colors.point : colors.textSecondary,
+              fontWeight: '600',
+            }}
+          >
+            {scrap.isBookmarked ? '저장됨' : '저장하기'}
           </Text>
         </TouchableOpacity>
         <TouchableOpacity
@@ -134,7 +149,12 @@ const styles = StyleSheet.create({
     paddingVertical: spacing.md,
     borderTopWidth: StyleSheet.hairlineWidth,
   },
-  bookmarkBtn: { paddingVertical: 8 },
+  bookmarkBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    paddingVertical: 8,
+  },
   primaryBtn: {
     paddingVertical: 14,
     paddingHorizontal: 32,

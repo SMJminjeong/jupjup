@@ -1,10 +1,18 @@
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { Tabs } from 'expo-router';
-import { Text } from 'react-native';
 import { useTheme } from '@/constants/theme';
 
-const TabIcon = ({ label, focused }: { label: string; focused: boolean }) => (
-  <Text style={{ fontSize: 18, opacity: focused ? 1 : 0.5 }}>{label}</Text>
-);
+type MCIName = React.ComponentProps<typeof MaterialCommunityIcons>['name'];
+
+const TabIcon = ({
+  name,
+  color,
+  size,
+}: {
+  name: MCIName;
+  color: string;
+  size: number;
+}) => <MaterialCommunityIcons name={name} size={size} color={color} />;
 
 const TabsLayout = () => {
   const colors = useTheme();
@@ -28,35 +36,61 @@ const TabsLayout = () => {
         name="index"
         options={{
           title: '홈',
-          tabBarIcon: ({ focused }) => <TabIcon label="🏠" focused={focused} />,
+          tabBarIcon: ({ focused, color, size }) => (
+            <TabIcon name={focused ? 'home' : 'home-outline'} color={color} size={size} />
+          ),
         }}
       />
       <Tabs.Screen
         name="ai"
         options={{
           title: 'AI',
-          tabBarIcon: ({ focused }) => <TabIcon label="🤖" focused={focused} />,
+          tabBarIcon: ({ focused, color, size }) => (
+            <TabIcon
+              name={focused ? 'robot-happy' : 'robot-happy-outline'}
+              color={color}
+              size={size}
+            />
+          ),
         }}
       />
       <Tabs.Screen
         name="jobs"
         options={{
           title: '채용',
-          tabBarIcon: ({ focused }) => <TabIcon label="💼" focused={focused} />,
+          tabBarIcon: ({ focused, color, size }) => (
+            <TabIcon
+              name={focused ? 'briefcase' : 'briefcase-outline'}
+              color={color}
+              size={size}
+            />
+          ),
         }}
       />
       <Tabs.Screen
         name="finance"
         options={{
           title: '재테크',
-          tabBarIcon: ({ focused }) => <TabIcon label="📊" focused={focused} />,
+          tabBarIcon: ({ focused, color, size }) => (
+            <TabIcon
+              name={focused ? 'chart-line' : 'chart-line-variant'}
+              color={color}
+              size={size}
+            />
+          ),
         }}
       />
       <Tabs.Screen
         name="my"
         options={{
           title: 'MY',
-          tabBarIcon: ({ focused }) => <TabIcon label="👤" focused={focused} />,
+          tabBarIcon: ({ focused, color, size }) => (
+            <TabIcon
+              name={focused ? 'account' : 'account-outline'}
+              color={color}
+              size={size}
+            />
+          ),
         }}
       />
     </Tabs>

@@ -1,3 +1,4 @@
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useState } from 'react';
 import { ScrollView, StyleSheet, Switch, Text, TouchableOpacity, View } from 'react-native';
 import { spacing, useTheme } from '@/constants/theme';
@@ -49,7 +50,12 @@ const NotificationsScreen = () => {
               <TouchableOpacity
                 style={[styles.timeChip, { backgroundColor: colors.bgSurface }]}
               >
-                <Text style={{ color: colors.textPrimary, fontSize: 14 }}>🕘 {alarmTime}</Text>
+                <MaterialCommunityIcons
+                  name="clock-outline"
+                  size={16}
+                  color={colors.textSecondary}
+                />
+                <Text style={{ color: colors.textPrimary, fontSize: 14 }}>{alarmTime}</Text>
               </TouchableOpacity>
             </View>
           </>
@@ -141,6 +147,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   timeChip: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
     paddingHorizontal: 12,
     paddingVertical: 6,
     borderRadius: 8,

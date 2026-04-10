@@ -1,3 +1,4 @@
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { useMemo, useState } from 'react';
 import { FlatList, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
@@ -62,7 +63,12 @@ const SearchScreen = () => {
                 onPress={() => setQuery(r)}
                 style={[styles.chip, { backgroundColor: colors.bgSurface }]}
               >
-                <Text style={{ color: colors.textSecondary }}>{r} ✕</Text>
+                <Text style={{ color: colors.textSecondary }}>{r}</Text>
+                <MaterialCommunityIcons
+                  name="close"
+                  size={14}
+                  color={colors.textTertiary}
+                />
               </TouchableOpacity>
             ))}
           </View>
@@ -134,7 +140,14 @@ const styles = StyleSheet.create({
   },
   sectionTitle: { fontSize: 15, fontWeight: '600' },
   chipsRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
-  chip: { paddingHorizontal: 12, paddingVertical: 6, borderRadius: 20 },
+  chip: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 20,
+  },
   empty: { flex: 1, alignItems: 'center', justifyContent: 'center' },
 });
 

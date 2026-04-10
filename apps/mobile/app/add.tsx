@@ -1,3 +1,4 @@
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { CATEGORY_EMOJI, CATEGORY_LABEL, type Category } from '@jupjup/types';
 import { isValidUrl } from '@jupjup/utils';
 import { router } from 'expo-router';
@@ -38,8 +39,12 @@ const AddScrapScreen = () => {
 
       <View style={styles.header}>
         <Text style={[styles.title, { color: colors.textPrimary }]}>새 스크랩 추가</Text>
-        <TouchableOpacity onPress={() => router.back()} style={styles.close}>
-          <Text style={{ color: colors.textSecondary, fontSize: 20 }}>✕</Text>
+        <TouchableOpacity
+          onPress={() => router.back()}
+          style={styles.close}
+          accessibilityLabel="닫기"
+        >
+          <MaterialCommunityIcons name="close" size={22} color={colors.textSecondary} />
         </TouchableOpacity>
       </View>
 
