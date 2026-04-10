@@ -13,7 +13,8 @@ const SearchScreen = () => {
   const colors = useTheme();
   const { scraps, toggleBookmark } = useScrapStore();
   const [query, setQuery] = useState('');
-  const [recent, setRecent] = useState<string[]>(['GPT-5', '토스 채용', '미국 ETF']);
+  const [recent, setRecent] = useState<string[]>(['GPT-5', 'AI 규제', '카카오 채용', '재테크']);
+  const suggestedTags = ['LLM', '생성AI', 'IT', '주식', 'ETF'];
 
   const results = useMemo(() => {
     if (!query.trim()) return [];
@@ -62,6 +63,26 @@ const SearchScreen = () => {
                 style={[styles.chip, { backgroundColor: colors.bgSurface }]}
               >
                 <Text style={{ color: colors.textSecondary }}>{r} ✕</Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+
+          <Text
+            style={[
+              styles.sectionTitle,
+              { color: colors.textPrimary, marginTop: spacing.xl, marginBottom: spacing.md },
+            ]}
+          >
+            추천 태그
+          </Text>
+          <View style={styles.chipsRow}>
+            {suggestedTags.map((t) => (
+              <TouchableOpacity
+                key={t}
+                onPress={() => setQuery(t)}
+                style={[styles.chip, { backgroundColor: colors.point + '15' }]}
+              >
+                <Text style={{ color: colors.point, fontWeight: '600' }}>#{t}</Text>
               </TouchableOpacity>
             ))}
           </View>

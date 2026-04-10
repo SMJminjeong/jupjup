@@ -1,6 +1,6 @@
 import { Redirect } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 import { lightColors } from '@/constants/colors';
 
 /**
@@ -26,8 +26,15 @@ const SplashScreen = () => {
 
   return (
     <View style={styles.container}>
+      <View style={styles.iconBox}>
+        <Text style={styles.iconEmoji}>📦</Text>
+      </View>
       <Text style={styles.logo}>송줍줍</Text>
-      <ActivityIndicator color="#FFFFFF" style={{ marginTop: 24 }} />
+      <View style={styles.dots}>
+        <View style={styles.dot} />
+        <View style={styles.dot} />
+        <View style={styles.dot} />
+      </View>
     </View>
   );
 };
@@ -39,10 +46,31 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+  iconBox: {
+    width: 88,
+    height: 88,
+    borderRadius: 22,
+    backgroundColor: 'rgba(255,255,255,0.2)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 24,
+  },
+  iconEmoji: { fontSize: 48 },
   logo: {
-    fontSize: 32,
+    fontSize: 28,
     fontWeight: '700',
     color: '#FFFFFF',
+  },
+  dots: {
+    flexDirection: 'row',
+    gap: 8,
+    marginTop: 28,
+  },
+  dot: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: 'rgba(255,255,255,0.7)',
   },
 });
 

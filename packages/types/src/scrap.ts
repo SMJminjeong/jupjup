@@ -7,6 +7,13 @@ export const CATEGORY_LABEL: Record<Category, string> = {
   finance: '재테크',
 };
 
+export const CATEGORY_EMOJI: Record<Category, string> = {
+  ai_news: '🤖',
+  job_news: '💼',
+  job_post: '📋',
+  finance: '💰',
+};
+
 export interface Scrap {
   id: string;
   userId: string;

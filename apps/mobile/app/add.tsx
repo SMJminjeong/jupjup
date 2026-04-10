@@ -1,4 +1,4 @@
-import { CATEGORY_LABEL, type Category } from '@jupjup/types';
+import { CATEGORY_EMOJI, CATEGORY_LABEL, type Category } from '@jupjup/types';
 import { isValidUrl } from '@jupjup/utils';
 import { router } from 'expo-router';
 import { useState } from 'react';
@@ -85,6 +85,7 @@ const AddScrapScreen = () => {
                   },
                 ]}
               >
+                <Text style={styles.gridEmoji}>{CATEGORY_EMOJI[c]}</Text>
                 <Text
                   style={{
                     color: active ? colors.category[c] : colors.textSecondary,
@@ -148,12 +149,15 @@ const styles = StyleSheet.create({
   grid: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm },
   gridItem: {
     width: '48%',
-    height: 56,
+    height: 72,
     borderRadius: 10,
     borderWidth: 2,
     alignItems: 'center',
     justifyContent: 'center',
+    flexDirection: 'row',
+    gap: 8,
   },
+  gridEmoji: { fontSize: 22 },
   textarea: {
     minHeight: 96,
     borderRadius: 10,

@@ -14,7 +14,8 @@
       "Bash(kill byahd8j5i:*)",
       "Bash(pnpm expo:*)",
       "Bash(curl -s http://localhost:8082)",
-      "Bash(curl -s http://localhost:8082/?platform=ios -H \"Expo-Platform: ios\" -H \"Accept: application/expo+json,application/json\")"
+      "Bash(curl -s http://localhost:8082/?platform=ios -H \"Expo-Platform: ios\" -H \"Accept: application/expo+json,application/json\")",
+      "Bash(pnpm type-check:*)"
     ]
   }
 }
