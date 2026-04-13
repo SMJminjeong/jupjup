@@ -23,7 +23,24 @@
       "Bash(npx kill-port:*)",
       "Bash(lsof -ti:8081)",
       "Bash(xargs kill:*)",
-      "Bash(rm D:/_STUDY/jupjup/apps/server/src/test-db.ts)"
+      "Bash(rm D:/_STUDY/jupjup/apps/server/src/test-db.ts)",
+      "Bash(pnpm --filter mobile tsc --noEmit)",
+      "Bash(pnpm --filter server tsc --noEmit)",
+      "Bash(npx tsc:*)",
+      "Bash(pnpm --filter server dev)",
+      "Bash(npx expo:*)",
+      "Bash(curl -s -H \"Expo-Platform: ios\" http://localhost:8081)",
+      "Bash(curl:*)",
+      "Bash(ls apps/mobile/node_modules/expo-crypto)",
+      "Bash(ls apps/mobile/node_modules/expo-auth-session)",
+      "Bash(ls node_modules/expo-crypto)",
+      "Bash(ls node_modules/expo-auth-session)",
+      "Bash(pnpm --filter mobile add expo-crypto@~15.0.8 expo-auth-session@~7.0.10)",
+      "Bash(pnpm --filter mobile add expo-crypto@~15.0.8)",
+      "Bash(pnpm --filter mobile add expo-auth-session@~7.0.10)",
+      "Bash(ls node_modules/expo-web-browser/package.json)",
+      "Bash(ls node_modules/expo-linking/package.json)",
+      "Bash(iconv -f cp949 -t utf-8)"
     ]
   }
 }

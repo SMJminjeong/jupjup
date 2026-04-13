@@ -10,7 +10,9 @@ const envSchema = z.object({
   SUPABASE_SERVICE_ROLE_KEY: z.string().min(1),
 
   // Auth
+  SERVER_URL: z.string().url().default('http://localhost:4000'),
   KAKAO_REST_API_KEY: z.string().min(1),
+  KAKAO_CLIENT_SECRET: z.string().min(1),
   JWT_SECRET: z.string().min(16),
 });
 
@@ -33,6 +35,8 @@ export const loadEnv = (): Env => {
         SUPABASE_ANON_KEY: process.env.SUPABASE_ANON_KEY || 'placeholder',
         SUPABASE_SERVICE_ROLE_KEY: process.env.SUPABASE_SERVICE_ROLE_KEY || 'placeholder',
         KAKAO_REST_API_KEY: process.env.KAKAO_REST_API_KEY || 'placeholder',
+        KAKAO_CLIENT_SECRET: process.env.KAKAO_CLIENT_SECRET || 'placeholder',
+        SERVER_URL: process.env.SERVER_URL || 'http://localhost:4000',
         JWT_SECRET: process.env.JWT_SECRET || 'dev-secret-minimum-16',
       };
       return _env;

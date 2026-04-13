@@ -1,7 +1,9 @@
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { router } from 'expo-router';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, Alert, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useKakaoAuth } from '@/hooks/useKakaoAuth';
+import { useAuthStore } from '@/stores/authStore';
 import { useTheme } from '@/constants/theme';
 
 /**
@@ -9,10 +11,16 @@ import { useTheme } from '@/constants/theme';
  */
 const LoginScreen = () => {
   const colors = useTheme();
+  const { login, isReady } = useKakaoAuth();
+  const isLoading = useAuthStore((s) => s.isLoading);
 
   const handleKakaoLogin = async () => {
-    // TODO: Kakao OAuth 연동 (expo-auth-session)
-    router.replace('/(tabs)');
+    const success = await login();
+    if (success) {
+      router.replace('/(tabs)');
+    } else {
+      Alert.alert('로그인 실패', '다시 시도해주세요.');
+    }
   };
 
   return (
@@ -32,15 +40,22 @@ const LoginScreen = () => {
         <TouchableOpacity
           style={[styles.kakaoButton, { backgroundColor: colors.kakao }]}
           onPress={handleKakaoLogin}
+          disabled={!isReady || isLoading}
         >
-          <MaterialCommunityIcons
-            name="chat"
-            size={20}
-            color={colors.kakaoText}
-          />
-          <Text style={[styles.kakaoText, { color: colors.kakaoText }]}>
-            카카오로 계속하기
-          </Text>
+          {isLoading ? (
+            <ActivityIndicator color={colors.kakaoText} />
+          ) : (
+            <>
+              <MaterialCommunityIcons
+                name="chat"
+                size={20}
+                color={colors.kakaoText}
+              />
+              <Text style={[styles.kakaoText, { color: colors.kakaoText }]}>
+                카카오로 계속하기
+              </Text>
+            </>
+          )}
         </TouchableOpacity>
         <Text style={[styles.terms, { color: colors.textTertiary }]}>
           로그인 시{' '}

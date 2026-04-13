@@ -2,23 +2,52 @@ import { Redirect } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { lightColors } from '@/constants/colors';
+import { tokenStore, apiJson } from '@/lib/api';
+import { useAuthStore } from '@/stores/authStore';
 
 /**
  * S-01 스플래시 화면
- * 자동 로그인 토큰 확인 후 분기.
+ * SecureStore 토큰 확인 → /auth/me 로 유효성 검증 후 분기.
  */
 const SplashScreen = () => {
   const [ready, setReady] = useState(false);
   const [hasToken, setHasToken] = useState(false);
+  const setSession = useAuthStore((s) => s.setSession);
 
   useEffect(() => {
-    // TODO: expo-secure-store에서 토큰 조회
-    const t = setTimeout(() => {
-      setHasToken(false);
-      setReady(true);
-    }, 800);
-    return () => clearTimeout(t);
-  }, []);
+    (async () => {
+      try {
+        const token = await tokenStore.get();
+        if (token) {
+          const { user } = await apiJson<{
+            user: {
+              id: string;
+              kakaoId: number;
+              nickname: string;
+              avatarUrl: string | null;
+              email: string | null;
+            };
+          }>('/api/auth/me');
+          setSession(
+            {
+              id: user.id,
+              kakaoId: user.kakaoId,
+              nickname: user.nickname,
+              avatarUrl: user.avatarUrl,
+              email: user.email,
+              createdAt: new Date().toISOString(),
+            },
+            token,
+          );
+          setHasToken(true);
+        }
+      } catch {
+        await tokenStore.remove();
+      } finally {
+        setReady(true);
+      }
+    })();
+  }, [setSession]);
 
   if (ready) {
     return <Redirect href={hasToken ? '/(tabs)' : '/onboarding'} />;
