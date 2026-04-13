@@ -1,10 +1,10 @@
 import { router } from 'expo-router';
 import { useEffect, useMemo, useState } from 'react';
-import { FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import ScrapCard from '@/components/ScrapCard';
-import { MOCK_SCRAPS } from '@/constants/mockData';
 import { spacing, useTheme } from '@/constants/theme';
+import { useScraps } from '@/hooks/useScraps';
 import { useScrapStore } from '@/stores/scrapStore';
 
 const SUB_FILTERS = ['전체', 'LLM', '생성AI', '로봇', '규제', '연구'];
@@ -14,12 +14,13 @@ const SUB_FILTERS = ['전체', 'LLM', '생성AI', '로봇', '규제', '연구'];
  */
 const AiNewsScreen = () => {
   const colors = useTheme();
-  const { scraps, setScraps, toggleBookmark } = useScrapStore();
+  const scraps = useScrapStore((s) => s.scraps);
+  const { loading, refreshing, fetchScraps, refresh, loadMore, toggleBookmark } = useScraps();
   const [sub, setSub] = useState('전체');
 
   useEffect(() => {
-    if (scraps.length === 0) setScraps(MOCK_SCRAPS);
-  }, [scraps.length, setScraps]);
+    fetchScraps({ category: 'ai_news' });
+  }, [fetchScraps]);
 
   const filtered = useMemo(() => {
     const ai = scraps.filter((s) => s.category === 'ai_news');
@@ -57,30 +58,37 @@ const AiNewsScreen = () => {
         }}
       />
 
-      {filtered.length === 0 ? (
-        <View style={styles.empty}>
-          <Text style={[styles.emptyTitle, { color: colors.textSecondary }]}>
-            아직 수집된 AI 뉴스가 없어요
-          </Text>
-          <Text style={{ color: colors.textTertiary, marginTop: 8 }}>
-            잠시 후 자동으로 업데이트돼요
-          </Text>
-        </View>
-      ) : (
-        <FlatList
-          data={filtered}
-          keyExtractor={(item) => item.id}
-          contentContainerStyle={styles.listContent}
-          ItemSeparatorComponent={() => <View style={{ height: spacing.md }} />}
-          renderItem={({ item }) => (
-            <ScrapCard
-              scrap={item}
-              onPress={() => router.push(`/scrap/${item.id}`)}
-              onBookmark={toggleBookmark}
-            />
-          )}
-        />
-      )}
+      <FlatList
+        data={filtered}
+        keyExtractor={(item) => item.id}
+        contentContainerStyle={styles.listContent}
+        ItemSeparatorComponent={() => <View style={{ height: spacing.md }} />}
+        refreshing={refreshing}
+        onRefresh={() => refresh({ category: 'ai_news' })}
+        onEndReached={() => loadMore({ category: 'ai_news' })}
+        onEndReachedThreshold={0.3}
+        ListEmptyComponent={
+          loading ? (
+            <ActivityIndicator style={{ marginTop: 40 }} color={colors.point} />
+          ) : (
+            <View style={styles.empty}>
+              <Text style={[styles.emptyTitle, { color: colors.textSecondary }]}>
+                아직 수집된 AI 뉴스가 없어요
+              </Text>
+              <Text style={{ color: colors.textTertiary, marginTop: 8 }}>
+                잠시 후 자동으로 업데이트돼요
+              </Text>
+            </View>
+          )
+        }
+        renderItem={({ item }) => (
+          <ScrapCard
+            scrap={item}
+            onPress={() => router.push(`/scrap/${item.id}`)}
+            onBookmark={toggleBookmark}
+          />
+        )}
+      />
     </SafeAreaView>
   );
 };

@@ -1,8 +1,9 @@
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import type { Category } from '@jupjup/types';
 import { CATEGORY_EMOJI, CATEGORY_LABEL } from '@jupjup/types';
-import { useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import {
+  ActivityIndicator,
   Modal,
   ScrollView,
   StyleSheet,
@@ -11,6 +12,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
+import { apiJson } from '@/lib/api';
 import { spacing, useTheme } from '@/constants/theme';
 
 interface Keyword {
@@ -26,16 +28,30 @@ const CATEGORIES: Category[] = ['ai_news', 'job_news', 'job_post', 'finance'];
  */
 const KeywordsScreen = () => {
   const colors = useTheme();
-  const [keywords, setKeywords] = useState<Keyword[]>([
-    { id: '1', text: 'GPT', category: 'ai_news' },
-    { id: '2', text: 'LLM', category: 'ai_news' },
-    { id: '3', text: 'React', category: 'job_post' },
-    { id: '4', text: 'TypeScript', category: 'job_post' },
-    { id: '5', text: 'ETF', category: 'finance' },
-  ]);
+  const [keywords, setKeywords] = useState<Keyword[]>([]);
+  const [loading, setLoading] = useState(true);
   const [modalOpen, setModalOpen] = useState(false);
   const [input, setInput] = useState('');
   const [selectedCat, setSelectedCat] = useState<Category>('ai_news');
+
+  const fetchKeywords = useCallback(async () => {
+    try {
+      const data = await apiJson<{ keywords: Array<{ id: string; keyword: string; category: Category }> }>(
+        '/api/keywords',
+      );
+      setKeywords(
+        data.keywords.map((k) => ({ id: k.id, text: k.keyword, category: k.category })),
+      );
+    } catch (err) {
+      console.error('키워드 조회 실패:', err);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchKeywords();
+  }, [fetchKeywords]);
 
   const grouped = useMemo(() => {
     return CATEGORIES.map((cat) => ({
@@ -44,19 +60,43 @@ const KeywordsScreen = () => {
     })).filter((g) => g.items.length > 0);
   }, [keywords]);
 
-  const addKeyword = () => {
+  const addKeyword = async () => {
     if (!input.trim()) return;
-    setKeywords((k) => [
-      ...k,
-      { id: String(Date.now()), text: input.trim(), category: selectedCat },
-    ]);
+    try {
+      const data = await apiJson<{ keyword: { id: string; keyword: string; category: Category } }>(
+        '/api/keywords',
+        {
+          method: 'POST',
+          body: JSON.stringify({ keyword: input.trim(), category: selectedCat }),
+        },
+      );
+      setKeywords((k) => [
+        ...k,
+        { id: data.keyword.id, text: data.keyword.keyword, category: data.keyword.category },
+      ]);
+    } catch (err) {
+      console.error('키워드 추가 실패:', err);
+    }
     setInput('');
     setModalOpen(false);
   };
 
-  const removeKeyword = (id: string) => {
-    setKeywords((k) => k.filter((it) => it.id !== id));
+  const removeKeyword = async (id: string) => {
+    try {
+      await apiJson(`/api/keywords/${id}`, { method: 'DELETE' });
+      setKeywords((k) => k.filter((it) => it.id !== id));
+    } catch (err) {
+      console.error('키워드 삭제 실패:', err);
+    }
   };
+
+  if (loading) {
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', backgroundColor: colors.bgPrimary }}>
+        <ActivityIndicator color={colors.point} />
+      </View>
+    );
+  }
 
   return (
     <ScrollView

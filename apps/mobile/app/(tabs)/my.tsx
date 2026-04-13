@@ -3,6 +3,7 @@ import { router } from 'expo-router';
 import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { spacing, useTheme } from '@/constants/theme';
+import { useKakaoAuth } from '@/hooks/useKakaoAuth';
 import { useAuthStore } from '@/stores/authStore';
 import { useScrapStore } from '@/stores/scrapStore';
 
@@ -11,8 +12,9 @@ import { useScrapStore } from '@/stores/scrapStore';
  */
 const MyPageScreen = () => {
   const colors = useTheme();
-  const { user, clear } = useAuthStore();
-  const { scraps } = useScrapStore();
+  const user = useAuthStore((s) => s.user);
+  const scraps = useScrapStore((s) => s.scraps);
+  const { logout } = useKakaoAuth();
 
   const total = scraps.length;
   const bookmarked = scraps.filter((s) => s.isBookmarked).length;
@@ -30,9 +32,20 @@ const MyPageScreen = () => {
   ];
   const max = Math.max(1, ...byCategory.map((c) => c.count));
 
-  const handleLogout = () => {
-    clear();
+  const handleLogout = async () => {
+    await logout();
     router.replace('/login');
+  };
+
+  const handleDeleteAccount = async () => {
+    try {
+      const { apiJson } = await import('@/lib/api');
+      await apiJson('/api/auth/me', { method: 'DELETE' });
+      await logout();
+      router.replace('/login');
+    } catch (err) {
+      console.error('계정 탈퇴 실패:', err);
+    }
   };
 
   return (
@@ -83,7 +96,7 @@ const MyPageScreen = () => {
           <MenuItem label="앱 버전" trailing="1.0.0" colors={colors} />
           <View style={[styles.divider, { backgroundColor: colors.border }]} />
           <MenuItem label="로그아웃" onPress={handleLogout} danger colors={colors} />
-          <MenuItem label="계정 탈퇴" onPress={() => {}} danger colors={colors} />
+          <MenuItem label="계정 탈퇴" onPress={handleDeleteAccount} danger colors={colors} />
         </View>
       </ScrollView>
     </SafeAreaView>

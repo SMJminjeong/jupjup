@@ -1,10 +1,10 @@
 import { router } from 'expo-router';
 import { useEffect, useMemo, useState } from 'react';
-import { FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import ScrapCard from '@/components/ScrapCard';
-import { MOCK_SCRAPS } from '@/constants/mockData';
 import { spacing, useTheme } from '@/constants/theme';
+import { useScraps } from '@/hooks/useScraps';
 import { useScrapStore } from '@/stores/scrapStore';
 
 const SUB_FILTERS = ['전체', '주식', 'ETF', '부동산', '절세', '예적금'];
@@ -14,12 +14,13 @@ const SUB_FILTERS = ['전체', '주식', 'ETF', '부동산', '절세', '예적�
  */
 const FinanceScreen = () => {
   const colors = useTheme();
-  const { scraps, setScraps, toggleBookmark } = useScrapStore();
+  const scraps = useScrapStore((s) => s.scraps);
+  const { loading, refreshing, fetchScraps, refresh, loadMore, toggleBookmark } = useScraps();
   const [sub, setSub] = useState('전체');
 
   useEffect(() => {
-    if (scraps.length === 0) setScraps(MOCK_SCRAPS);
-  }, [scraps.length, setScraps]);
+    fetchScraps({ category: 'finance' });
+  }, [fetchScraps]);
 
   const filtered = useMemo(() => {
     const list = scraps.filter((s) => s.category === 'finance');
@@ -60,6 +61,19 @@ const FinanceScreen = () => {
         keyExtractor={(item) => item.id}
         contentContainerStyle={styles.listContent}
         ItemSeparatorComponent={() => <View style={{ height: spacing.md }} />}
+        refreshing={refreshing}
+        onRefresh={() => refresh({ category: 'finance' })}
+        onEndReached={() => loadMore({ category: 'finance' })}
+        onEndReachedThreshold={0.3}
+        ListEmptyComponent={
+          loading ? (
+            <ActivityIndicator style={{ marginTop: 40 }} color={colors.point} />
+          ) : (
+            <Text style={{ textAlign: 'center', marginTop: 40, color: colors.textSecondary }}>
+              아직 재테크 콘텐츠가 없어요
+            </Text>
+          )
+        }
         renderItem={({ item }) => (
           <ScrapCard
             scrap={item}

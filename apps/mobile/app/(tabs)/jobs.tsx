@@ -1,11 +1,11 @@
 import { router } from 'expo-router';
 import { useEffect, useMemo, useState } from 'react';
-import { FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import JobCard from '@/components/JobCard';
 import ScrapCard from '@/components/ScrapCard';
-import { MOCK_SCRAPS } from '@/constants/mockData';
 import { spacing, useTheme } from '@/constants/theme';
+import { useScraps } from '@/hooks/useScraps';
 import { useScrapStore } from '@/stores/scrapStore';
 
 type Segment = 'news' | 'post';
@@ -15,12 +15,15 @@ type Segment = 'news' | 'post';
  */
 const JobsScreen = () => {
   const colors = useTheme();
-  const { scraps, setScraps, toggleBookmark } = useScrapStore();
+  const scraps = useScrapStore((s) => s.scraps);
+  const { loading, refreshing, fetchScraps, refresh, loadMore, toggleBookmark } = useScraps();
   const [seg, setSeg] = useState<Segment>('news');
 
+  const category = seg === 'news' ? 'job_news' as const : 'job_post' as const;
+
   useEffect(() => {
-    if (scraps.length === 0) setScraps(MOCK_SCRAPS);
-  }, [scraps.length, setScraps]);
+    fetchScraps({ category });
+  }, [category, fetchScraps]);
 
   const news = useMemo(() => scraps.filter((s) => s.category === 'job_news'), [scraps]);
   const posts = useMemo(() => scraps.filter((s) => s.category === 'job_post'), [scraps]);
@@ -62,6 +65,13 @@ const JobsScreen = () => {
           keyExtractor={(item) => item.id}
           contentContainerStyle={styles.listContent}
           ItemSeparatorComponent={() => <View style={{ height: spacing.md }} />}
+          refreshing={refreshing}
+          onRefresh={() => refresh({ category: 'job_news' })}
+          onEndReached={() => loadMore({ category: 'job_news' })}
+          onEndReachedThreshold={0.3}
+          ListEmptyComponent={
+            loading ? <ActivityIndicator style={{ marginTop: 40 }} color={colors.point} /> : null
+          }
           renderItem={({ item }) => (
             <ScrapCard
               scrap={item}
@@ -76,8 +86,17 @@ const JobsScreen = () => {
           keyExtractor={(item) => item.id}
           contentContainerStyle={styles.listContent}
           ItemSeparatorComponent={() => <View style={{ height: spacing.md }} />}
+          refreshing={refreshing}
+          onRefresh={() => refresh({ category: 'job_post' })}
+          onEndReached={() => loadMore({ category: 'job_post' })}
+          onEndReachedThreshold={0.3}
           ListHeaderComponent={
-            <Text style={[styles.section, { color: colors.textPrimary }]}>마감 임박 🔥</Text>
+            posts.length > 0 ? (
+              <Text style={[styles.section, { color: colors.textPrimary }]}>마감 임박 🔥</Text>
+            ) : null
+          }
+          ListEmptyComponent={
+            loading ? <ActivityIndicator style={{ marginTop: 40 }} color={colors.point} /> : null
           }
           renderItem={({ item }) => (
             <JobCard

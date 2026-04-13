@@ -40,7 +40,8 @@
       "Bash(pnpm --filter mobile add expo-auth-session@~7.0.10)",
       "Bash(ls node_modules/expo-web-browser/package.json)",
       "Bash(ls node_modules/expo-linking/package.json)",
-      "Bash(iconv -f cp949 -t utf-8)"
+      "Bash(iconv -f cp949 -t utf-8)",
+      "Bash(xargs grep:*)"
     ]
   }
 }

@@ -2,11 +2,11 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import type { Category } from '@jupjup/types';
 import { router } from 'expo-router';
 import { useEffect, useMemo, useState } from 'react';
-import { FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import ScrapCard from '@/components/ScrapCard';
-import { MOCK_SCRAPS } from '@/constants/mockData';
 import { spacing, useTheme } from '@/constants/theme';
+import { useScraps } from '@/hooks/useScraps';
 import { useScrapStore } from '@/stores/scrapStore';
 
 type Filter = 'all' | Category;
@@ -24,12 +24,13 @@ const FILTERS: { key: Filter; label: string }[] = [
  */
 const HomeFeedScreen = () => {
   const colors = useTheme();
-  const { scraps, setScraps, toggleBookmark } = useScrapStore();
+  const scraps = useScrapStore((s) => s.scraps);
+  const { loading, refreshing, fetchScraps, refresh, loadMore, toggleBookmark } = useScraps();
   const [filter, setFilter] = useState<Filter>('all');
 
   useEffect(() => {
-    if (scraps.length === 0) setScraps(MOCK_SCRAPS);
-  }, [scraps.length, setScraps]);
+    fetchScraps(filter === 'all' ? {} : { category: filter });
+  }, [filter, fetchScraps]);
 
   const filtered = useMemo(
     () => (filter === 'all' ? scraps : scraps.filter((s) => s.category === filter)),
@@ -95,6 +96,19 @@ const HomeFeedScreen = () => {
         keyExtractor={(item) => item.id}
         contentContainerStyle={styles.listContent}
         ItemSeparatorComponent={() => <View style={{ height: spacing.md }} />}
+        refreshing={refreshing}
+        onRefresh={() => refresh(filter === 'all' ? {} : { category: filter })}
+        onEndReached={() => loadMore(filter === 'all' ? {} : { category: filter })}
+        onEndReachedThreshold={0.3}
+        ListEmptyComponent={
+          loading ? (
+            <ActivityIndicator style={{ marginTop: 40 }} color={colors.point} />
+          ) : (
+            <Text style={[styles.emptyText, { color: colors.textSecondary }]}>
+              아직 스크랩이 없어요
+            </Text>
+          )
+        }
         renderItem={({ item }) => (
           <ScrapCard
             scrap={item}
@@ -124,6 +138,7 @@ const styles = StyleSheet.create({
   tabBar: { position: 'absolute', bottom: 0, left: 0, right: 0, height: 2, borderRadius: 1 },
   updateBar: { paddingHorizontal: spacing.lg, paddingVertical: spacing.md },
   listContent: { padding: spacing.lg },
+  emptyText: { textAlign: 'center', marginTop: 40, fontSize: 14 },
 });
 
 export default HomeFeedScreen;
