@@ -16,7 +16,12 @@ export const useScrapStore = create<ScrapState>((set) => ({
   scraps: [],
   filter: 'all',
   setScraps: (scraps) => set({ scraps }),
-  appendScraps: (more) => set((s) => ({ scraps: [...s.scraps, ...more] })),
+  appendScraps: (more) =>
+    set((s) => {
+      const existing = new Set(s.scraps.map((it) => it.id));
+      const unique = more.filter((it) => !existing.has(it.id));
+      return { scraps: [...s.scraps, ...unique] };
+    }),
   setFilter: (filter) => set({ filter }),
   toggleBookmark: (id) =>
     set((s) => ({

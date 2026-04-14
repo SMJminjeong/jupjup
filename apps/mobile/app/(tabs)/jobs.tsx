@@ -62,7 +62,7 @@ const JobsScreen = () => {
       {seg === 'news' ? (
         <FlatList
           data={news}
-          keyExtractor={(item) => item.id}
+          keyExtractor={(item, i) => `${item.id}-${i}`}
           contentContainerStyle={styles.listContent}
           ItemSeparatorComponent={() => <View style={{ height: spacing.md }} />}
           refreshing={refreshing}
@@ -83,7 +83,7 @@ const JobsScreen = () => {
       ) : (
         <FlatList
           data={posts}
-          keyExtractor={(item) => item.id}
+          keyExtractor={(item, i) => `${item.id}-${i}`}
           contentContainerStyle={styles.listContent}
           ItemSeparatorComponent={() => <View style={{ height: spacing.md }} />}
           refreshing={refreshing}

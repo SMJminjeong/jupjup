@@ -58,7 +58,7 @@ const FinanceScreen = () => {
 
       <FlatList
         data={filtered}
-        keyExtractor={(item) => item.id}
+        keyExtractor={(item, i) => `${item.id}-${i}`}
         contentContainerStyle={styles.listContent}
         ItemSeparatorComponent={() => <View style={{ height: spacing.md }} />}
         refreshing={refreshing}

@@ -16,19 +16,27 @@ export const RSS_FEEDS: FeedSource[] = [
     tags: ['LLM', '생성AI'],
   },
   {
-    url: 'https://zdnet.co.kr/rss/ai.xml',
+    url: 'https://techcrunch.com/category/artificial-intelligence/feed/',
     category: 'ai_news',
-    source: '지디넷코리아',
-    tags: ['연구', '규제'],
+    source: 'TechCrunch AI',
+    tags: ['AI', '연구'],
+  },
+  {
+    url: 'https://news.google.com/rss/search?q=AI+artificial+intelligence&hl=ko&gl=KR&ceid=KR:ko',
+    category: 'ai_news',
+    source: 'Google News AI',
+    tags: ['AI', '생성AI'],
   },
 
   // 채용 뉴스
   {
-    url: 'https://www.jobkorea.co.kr/RSS/GoodNews',
+    url: 'https://news.google.com/rss/search?q=IT+developer+hiring+korea&hl=ko&gl=KR&ceid=KR:ko',
     category: 'job_news',
-    source: '잡코리아',
+    source: 'Google News 채용',
     tags: ['IT', '채용'],
   },
+
+  // 채용 공고 — RSS가 아닌 원티드/점핏 API로 수집 (jobs.ts)
 
   // 재테크
   {
@@ -36,5 +44,11 @@ export const RSS_FEEDS: FeedSource[] = [
     category: 'finance',
     source: '매일경제 증권',
     tags: ['주식', 'ETF'],
+  },
+  {
+    url: 'https://news.google.com/rss/search?q=ETF+stock+investment+korea&hl=ko&gl=KR&ceid=KR:ko',
+    category: 'finance',
+    source: 'Google News 재테크',
+    tags: ['재테크', '금융'],
   },
 ];

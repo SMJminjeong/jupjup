@@ -1,32 +1,72 @@
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import type { Scrap } from '@jupjup/types';
 import { router } from 'expo-router';
-import { useMemo, useState } from 'react';
-import { FlatList, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import {
+  ActivityIndicator,
+  FlatList,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import ScrapCard from '@/components/ScrapCard';
+import { apiJson } from '@/lib/api';
+import { mapScrap } from '@/lib/mappers';
 import { spacing, useTheme } from '@/constants/theme';
-import { useScrapStore } from '@/stores/scrapStore';
+import { useScraps } from '@/hooks/useScraps';
 
 /**
  * S-09 검색 화면
  */
 const SearchScreen = () => {
   const colors = useTheme();
-  const { scraps, toggleBookmark } = useScrapStore();
+  const { toggleBookmark } = useScraps();
   const [query, setQuery] = useState('');
+  const [results, setResults] = useState<Scrap[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [searched, setSearched] = useState(false);
   const [recent, setRecent] = useState<string[]>(['GPT-5', 'AI 규제', '카카오 채용', '재테크']);
   const suggestedTags = ['LLM', '생성AI', 'IT', '주식', 'ETF'];
+  const debounceRef = useRef<ReturnType<typeof setTimeout>>(undefined);
 
-  const results = useMemo(() => {
-    if (!query.trim()) return [];
-    const q = query.toLowerCase();
-    return scraps.filter(
-      (s) =>
-        s.title.toLowerCase().includes(q) ||
-        s.summary?.toLowerCase().includes(q) ||
-        s.source?.toLowerCase().includes(q),
-    );
-  }, [query, scraps]);
+  const search = useCallback(async (q: string) => {
+    if (!q.trim()) {
+      setResults([]);
+      setSearched(false);
+      return;
+    }
+    setLoading(true);
+    setSearched(true);
+    try {
+      const data = await apiJson<{ scraps: Record<string, unknown>[] }>(
+        `/api/scraps?search=${encodeURIComponent(q.trim())}`,
+      );
+      setResults(data.scraps.map(mapScrap));
+    } catch {
+      setResults([]);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+    debounceRef.current = setTimeout(() => search(query), 500);
+    return () => {
+      if (debounceRef.current) clearTimeout(debounceRef.current);
+    };
+  }, [query, search]);
+
+  const handleSelectRecent = (keyword: string) => {
+    setQuery(keyword);
+  };
+
+  const handleRemoveRecent = (keyword: string) => {
+    setRecent((r) => r.filter((k) => k !== keyword));
+  };
 
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: colors.bgPrimary }]} edges={['top']}>
@@ -60,15 +100,17 @@ const SearchScreen = () => {
             {recent.map((r) => (
               <TouchableOpacity
                 key={r}
-                onPress={() => setQuery(r)}
+                onPress={() => handleSelectRecent(r)}
                 style={[styles.chip, { backgroundColor: colors.bgSurface }]}
               >
                 <Text style={{ color: colors.textSecondary }}>{r}</Text>
-                <MaterialCommunityIcons
-                  name="close"
-                  size={14}
-                  color={colors.textTertiary}
-                />
+                <TouchableOpacity onPress={() => handleRemoveRecent(r)} hitSlop={8}>
+                  <MaterialCommunityIcons
+                    name="close"
+                    size={14}
+                    color={colors.textTertiary}
+                  />
+                </TouchableOpacity>
               </TouchableOpacity>
             ))}
           </View>
@@ -85,7 +127,7 @@ const SearchScreen = () => {
             {suggestedTags.map((t) => (
               <TouchableOpacity
                 key={t}
-                onPress={() => setQuery(t)}
+                onPress={() => handleSelectRecent(t)}
                 style={[styles.chip, { backgroundColor: colors.point + '15' }]}
               >
                 <Text style={{ color: colors.point, fontWeight: '600' }}>#{t}</Text>
@@ -93,7 +135,9 @@ const SearchScreen = () => {
             ))}
           </View>
         </View>
-      ) : results.length === 0 ? (
+      ) : loading ? (
+        <ActivityIndicator style={{ marginTop: 40 }} color={colors.point} />
+      ) : searched && results.length === 0 ? (
         <View style={styles.empty}>
           <Text style={{ color: colors.textSecondary, fontSize: 15 }}>
             '{query}'에 대한 결과가 없어요
@@ -105,7 +149,7 @@ const SearchScreen = () => {
       ) : (
         <FlatList
           data={results}
-          keyExtractor={(it) => it.id}
+          keyExtractor={(it, i) => `${it.id}-${i}`}
           contentContainerStyle={{ padding: spacing.lg }}
           ItemSeparatorComponent={() => <View style={{ height: spacing.md }} />}
           renderItem={({ item }) => (

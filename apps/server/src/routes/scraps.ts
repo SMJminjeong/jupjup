@@ -1,5 +1,6 @@
 import type { Category } from '@jupjup/types';
 import type { FastifyInstance } from 'fastify';
+import ogs from 'open-graph-scraper';
 import { z } from 'zod';
 import { supabaseAdmin } from '../lib/supabase.js';
 
@@ -27,10 +28,11 @@ export default async function scrapRoutes(app: FastifyInstance) {
     const userId = request.user!.userId;
     const db = supabaseAdmin();
 
+    // 내 스크랩 + 공용 RSS 풀 (user_id IS NULL) 모두 조회
     let q = db
       .from('scraps')
       .select('*')
-      .eq('user_id', userId)
+      .or(`user_id.eq.${userId},user_id.is.null`)
       .order('created_at', { ascending: false })
       .limit(query.limit);
 
@@ -59,7 +61,21 @@ export default async function scrapRoutes(app: FastifyInstance) {
     const userId = request.user!.userId;
     const db = supabaseAdmin();
 
-    // TODO: OG 메타데이터 파싱 (open-graph-scraper)
+    // OG 메타데이터 파싱
+    let ogTitle = body.url;
+    let ogSummary: string | null = null;
+    let ogThumbnail: string | null = null;
+    let ogSource: string | null = null;
+    try {
+      const { result } = await ogs({ url: body.url, timeout: 8000 });
+      ogTitle = result.ogTitle ?? result.dcTitle ?? body.url;
+      ogSummary = result.ogDescription ?? result.dcDescription ?? null;
+      ogThumbnail = result.ogImage?.[0]?.url ?? null;
+      ogSource = result.ogSiteName ?? null;
+    } catch {
+      app.log.warn(`OG 파싱 실패 (무시): ${body.url}`);
+    }
+
     const { data, error } = await db
       .from('scraps')
       .insert({
@@ -68,7 +84,10 @@ export default async function scrapRoutes(app: FastifyInstance) {
         category: body.category,
         memo: body.memo ?? null,
         deadline_at: body.deadlineAt ?? null,
-        title: body.url, // TODO: OG 파싱으로 교체
+        title: ogTitle,
+        summary: ogSummary,
+        thumbnail: ogThumbnail,
+        source: ogSource,
         tags: [],
       })
       .select()
@@ -100,9 +119,9 @@ export default async function scrapRoutes(app: FastifyInstance) {
       .from('scraps')
       .update(filtered)
       .eq('id', id)
-      .eq('user_id', userId)
+      .or(`user_id.eq.${userId},user_id.is.null`)
       .select()
-      .single();
+      .maybeSingle();
 
     if (error) throw error;
     return { scrap: data };
@@ -135,16 +154,16 @@ export default async function scrapRoutes(app: FastifyInstance) {
       .from('scraps')
       .select('is_bookmarked')
       .eq('id', id)
-      .eq('user_id', userId)
-      .single();
+      .or(`user_id.eq.${userId},user_id.is.null`)
+      .maybeSingle();
 
     const { data, error } = await db
       .from('scraps')
       .update({ is_bookmarked: !current?.is_bookmarked })
       .eq('id', id)
-      .eq('user_id', userId)
+      .or(`user_id.eq.${userId},user_id.is.null`)
       .select()
-      .single();
+      .maybeSingle();
 
     if (error) throw error;
     return { scrap: data };

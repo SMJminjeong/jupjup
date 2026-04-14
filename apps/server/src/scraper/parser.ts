@@ -41,11 +41,17 @@ export const collectFeed = async (feed: FeedSource): Promise<number> => {
         created_at: item.isoDate ?? new Date().toISOString(),
       };
 
-      // URL 중복 무시 (upsert)
-      const { error } = await db
+      // URL 중복 체크 후 삽입
+      const { data: existing } = await db
         .from('scraps')
-        .upsert(article, { onConflict: 'url', ignoreDuplicates: true });
+        .select('id')
+        .eq('url', item.link)
+        .is('user_id', null)
+        .maybeSingle();
 
+      if (existing) continue;
+
+      const { error } = await db.from('scraps').insert(article);
       if (!error) inserted++;
     }
 
