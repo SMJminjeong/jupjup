@@ -28,70 +28,37 @@ const JobCard = ({ scrap, onPress, onBookmark }: JobCardProps) => {
       onPress={onPress}
       style={[styles.card, { backgroundColor: colors.bgCard }]}
     >
-      <View style={styles.headerRow}>
-        <View style={styles.companyRow}>
-          <View style={[styles.logo, { backgroundColor: colors.bgSurface }]} />
-          <Text style={[styles.company, { color: colors.textPrimary }]}>
-            {scrap.source ?? '회사명'}
-          </Text>
+      <View style={styles.topRow}>
+        <Text style={[styles.company, { color: colors.textSecondary }]} numberOfLines={1}>
+          {scrap.source ?? '회사명'}
+        </Text>
+        <View style={styles.topRight}>
+          {scrap.deadlineAt && (
+            <Text style={[styles.dday, { color: ddayColor }]}>{formatDDay(scrap.deadlineAt)}</Text>
+          )}
+          <TouchableOpacity onPress={() => onBookmark(scrap.id)} hitSlop={8}>
+            <MaterialCommunityIcons
+              name={scrap.isBookmarked ? 'bookmark' : 'bookmark-outline'}
+              size={18}
+              color={scrap.isBookmarked ? colors.point : colors.textTertiary}
+            />
+          </TouchableOpacity>
         </View>
-        {scrap.deadlineAt && (
-          <View style={[styles.ddayBadge, { borderColor: ddayColor }]}>
-            <Text style={[styles.ddayText, { color: ddayColor }]}>
-              {formatDDay(scrap.deadlineAt)}
-            </Text>
-          </View>
-        )}
       </View>
 
       <Text style={[styles.position, { color: colors.textPrimary }]} numberOfLines={2}>
         {scrap.title}
       </Text>
 
-      {scrap.summary ? (
-        <Text style={[styles.meta, { color: colors.textSecondary }]} numberOfLines={1}>
-          {scrap.summary}
-        </Text>
-      ) : null}
-
       {scrap.tags.length > 0 && (
         <View style={styles.tagsRow}>
-          {scrap.tags.slice(0, 4).map((t) => (
-            <View
-              key={t}
-              style={[styles.tag, { backgroundColor: colors.bgSurface }]}
-            >
-              <Text style={[styles.tagText, { color: colors.textSecondary }]}>
-                {t}
-              </Text>
-            </View>
+          {scrap.tags.slice(0, 3).map((t) => (
+            <Text key={t} style={[styles.tagText, { color: colors.textTertiary }]}>
+              #{t}
+            </Text>
           ))}
         </View>
       )}
-
-      <View style={[styles.divider, { backgroundColor: colors.border }]} />
-
-      <View style={styles.footerRow}>
-        <TouchableOpacity
-          onPress={() => onBookmark(scrap.id)}
-          hitSlop={8}
-          style={styles.bookmarkRow}
-          accessibilityLabel={scrap.isBookmarked ? '저장 해제' : '저장하기'}
-        >
-          <MaterialCommunityIcons
-            name={scrap.isBookmarked ? 'bookmark' : 'bookmark-outline'}
-            size={18}
-            color={scrap.isBookmarked ? colors.point : colors.textTertiary}
-          />
-          <Text style={{ color: scrap.isBookmarked ? colors.point : colors.textTertiary }}>
-            {scrap.isBookmarked ? '저장됨' : '저장하기'}
-          </Text>
-        </TouchableOpacity>
-        <View style={styles.linkRow}>
-          <Text style={{ color: colors.point, fontWeight: '600' }}>원문 보기</Text>
-          <MaterialCommunityIcons name="chevron-right" size={18} color={colors.point} />
-        </View>
-      </View>
     </TouchableOpacity>
   );
 };
@@ -99,38 +66,21 @@ const JobCard = ({ scrap, onPress, onBookmark }: JobCardProps) => {
 const styles = StyleSheet.create({
   card: {
     borderRadius: radius.card,
-    padding: spacing.lg,
-    shadowColor: '#000',
-    shadowOpacity: 0.06,
-    shadowOffset: { width: 0, height: 2 },
-    shadowRadius: 8,
-    elevation: 1,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.md,
   },
-  headerRow: {
+  topRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: spacing.sm,
+    marginBottom: 4,
   },
-  companyRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
-  logo: { width: 32, height: 32, borderRadius: 8 },
-  company: { fontSize: 14, fontWeight: '600' },
-  ddayBadge: {
-    paddingHorizontal: 8,
-    paddingVertical: 3,
-    borderRadius: radius.pill,
-    borderWidth: 1,
-  },
-  ddayText: { fontSize: 12, fontWeight: '700' },
-  position: { fontSize: 16, fontWeight: '600', marginBottom: 6 },
-  meta: { fontSize: 13, marginBottom: spacing.sm },
-  tagsRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 6, marginTop: 4 },
-  tag: { paddingHorizontal: 8, paddingVertical: 3, borderRadius: radius.pill },
-  tagText: { fontSize: 12 },
-  divider: { height: 1, marginVertical: spacing.md },
-  footerRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
-  bookmarkRow: { flexDirection: 'row', alignItems: 'center', gap: 4 },
-  linkRow: { flexDirection: 'row', alignItems: 'center', gap: 2 },
+  topRight: { flexDirection: 'row', alignItems: 'center', gap: 10 },
+  company: { fontSize: 12, fontWeight: '500', flex: 1, marginRight: 8 },
+  dday: { fontSize: 12, fontWeight: '700' },
+  position: { fontSize: 14, fontWeight: '600', lineHeight: 20 },
+  tagsRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginTop: 6 },
+  tagText: { fontSize: 11 },
 });
 
 export default JobCard;
