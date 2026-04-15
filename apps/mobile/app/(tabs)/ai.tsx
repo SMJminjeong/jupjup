@@ -1,8 +1,9 @@
 import { router } from 'expo-router';
 import { useEffect, useMemo, useState } from 'react';
-import { ActivityIndicator, FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import ScrapCard from '@/components/ScrapCard';
+import SkeletonCard from '@/components/SkeletonCard';
 import { spacing, useTheme } from '@/constants/theme';
 import { useScraps } from '@/hooks/useScraps';
 import { useScrapStore } from '@/stores/scrapStore';
@@ -69,7 +70,11 @@ const AiNewsScreen = () => {
         onEndReachedThreshold={0.3}
         ListEmptyComponent={
           loading ? (
-            <ActivityIndicator style={{ marginTop: 40 }} color={colors.point} />
+            <View>
+              {[0, 1, 2].map((i) => (
+                <SkeletonCard key={i} />
+              ))}
+            </View>
           ) : (
             <View style={styles.empty}>
               <Text style={[styles.emptyTitle, { color: colors.textSecondary }]}>

@@ -2,9 +2,10 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import type { Category } from '@jupjup/types';
 import { router } from 'expo-router';
 import { useEffect, useMemo, useState } from 'react';
-import { ActivityIndicator, FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import ScrapCard from '@/components/ScrapCard';
+import SkeletonCard from '@/components/SkeletonCard';
 import { spacing, useTheme } from '@/constants/theme';
 import { useScraps } from '@/hooks/useScraps';
 import { useScrapStore } from '@/stores/scrapStore';
@@ -102,7 +103,11 @@ const HomeFeedScreen = () => {
         onEndReachedThreshold={0.3}
         ListEmptyComponent={
           loading ? (
-            <ActivityIndicator style={{ marginTop: 40 }} color={colors.point} />
+            <View>
+              {[0, 1, 2, 3].map((i) => (
+                <SkeletonCard key={i} />
+              ))}
+            </View>
           ) : (
             <Text style={[styles.emptyText, { color: colors.textSecondary }]}>
               아직 스크랩이 없어요

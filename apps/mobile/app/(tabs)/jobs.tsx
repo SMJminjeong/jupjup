@@ -1,9 +1,10 @@
 import { router } from 'expo-router';
 import { useEffect, useMemo, useState } from 'react';
-import { ActivityIndicator, FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import JobCard from '@/components/JobCard';
 import ScrapCard from '@/components/ScrapCard';
+import SkeletonCard from '@/components/SkeletonCard';
 import { spacing, useTheme } from '@/constants/theme';
 import { useScraps } from '@/hooks/useScraps';
 import { useScrapStore } from '@/stores/scrapStore';
@@ -39,12 +40,20 @@ const JobsScreen = () => {
 
   const news = useMemo(() => scraps.filter((s) => s.category === 'job_news'), [scraps]);
   const posts = useMemo(() => {
-    const list = scraps.filter((s) => s.category === 'job_post');
-    if (postFilter === '전체') return list;
-    const pattern = FILTER_PATTERNS[postFilter];
-    return list.filter(
-      (s) => pattern.test(s.title) || pattern.test(s.summary ?? '') || s.tags.some((t) => pattern.test(t)),
-    );
+    let list = scraps.filter((s) => s.category === 'job_post');
+    if (postFilter !== '전체') {
+      const pattern = FILTER_PATTERNS[postFilter];
+      list = list.filter(
+        (s) =>
+          pattern.test(s.title) || pattern.test(s.summary ?? '') || s.tags.some((t) => pattern.test(t)),
+      );
+    }
+    // 마감 임박 우선 (deadline 있는 것 먼저, 가까운 순)
+    return [...list].sort((a, b) => {
+      const ad = a.deadlineAt ? new Date(a.deadlineAt).getTime() : Infinity;
+      const bd = b.deadlineAt ? new Date(b.deadlineAt).getTime() : Infinity;
+      return ad - bd;
+    });
   }, [scraps, postFilter]);
 
   return (
@@ -89,7 +98,13 @@ const JobsScreen = () => {
           onEndReached={() => loadMore({ category: 'job_news' })}
           onEndReachedThreshold={0.3}
           ListEmptyComponent={
-            loading ? <ActivityIndicator style={{ marginTop: 40 }} color={colors.point} /> : null
+            loading ? (
+              <View>
+                {[0, 1, 2].map((i) => (
+                  <SkeletonCard key={i} />
+                ))}
+              </View>
+            ) : null
           }
           renderItem={({ item }) => (
             <ScrapCard
@@ -142,7 +157,13 @@ const JobsScreen = () => {
             onEndReachedThreshold={0.3}
             ListEmptyComponent={
               loading ? (
-                <ActivityIndicator style={{ marginTop: 40 }} color={colors.point} />
+                <View>
+                  {[0, 1, 2, 3].map((i) => (
+                    <View key={i} style={{ marginBottom: spacing.sm }}>
+                      <SkeletonCard variant="job" />
+                    </View>
+                  ))}
+                </View>
               ) : (
                 <Text style={{ textAlign: 'center', marginTop: 40, color: colors.textSecondary }}>
                   해당 조건의 공고가 없어요

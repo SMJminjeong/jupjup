@@ -1,5 +1,6 @@
 import type { Category } from '@jupjup/types';
 import { useCallback, useRef, useState } from 'react';
+import { useToast } from '@/components/Toast';
 import { apiJson } from '@/lib/api';
 import { mapScrap } from '@/lib/mappers';
 import { useScrapStore } from '@/stores/scrapStore';
@@ -12,6 +13,7 @@ interface FetchOptions {
 
 export const useScraps = () => {
   const { setScraps, appendScraps } = useScrapStore();
+  const toast = useToast();
   const [loading, setLoading] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
   const cursorRef = useRef<string | null>(null);
@@ -50,13 +52,14 @@ export const useScraps = () => {
         return mapped;
       } catch (err) {
         console.error('스크랩 목록 조회 실패:', err);
+        toast.error('불러오기 실패');
         return [];
       } finally {
         setLoading(false);
         setRefreshing(false);
       }
     },
-    [setScraps, appendScraps],
+    [setScraps, appendScraps, toast],
   );
 
   const refresh = useCallback(
@@ -75,14 +78,20 @@ export const useScraps = () => {
     [fetchScraps, loading],
   );
 
-  const toggleBookmark = useCallback(async (id: string) => {
-    try {
-      await apiJson(`/api/scraps/${id}/bookmark`, { method: 'POST' });
-      useScrapStore.getState().toggleBookmark(id);
-    } catch (err) {
-      console.error('북마크 토글 실패:', err);
-    }
-  }, []);
+  const toggleBookmark = useCallback(
+    async (id: string) => {
+      const prev = useScrapStore.getState().scraps.find((s) => s.id === id);
+      try {
+        await apiJson(`/api/scraps/${id}/bookmark`, { method: 'POST' });
+        useScrapStore.getState().toggleBookmark(id);
+        toast.success(prev?.isBookmarked ? '북마크 해제' : '북마크 추가');
+      } catch (err) {
+        console.error('북마크 토글 실패:', err);
+        toast.error('북마크 처리 실패');
+      }
+    },
+    [toast],
+  );
 
   const markRead = useCallback(async (id: string) => {
     try {
@@ -96,14 +105,19 @@ export const useScraps = () => {
     }
   }, []);
 
-  const deleteScrap = useCallback(async (id: string) => {
-    try {
-      await apiJson(`/api/scraps/${id}`, { method: 'DELETE' });
-      useScrapStore.getState().removeScrap(id);
-    } catch (err) {
-      console.error('스크랩 삭제 실패:', err);
-    }
-  }, []);
+  const deleteScrap = useCallback(
+    async (id: string) => {
+      try {
+        await apiJson(`/api/scraps/${id}`, { method: 'DELETE' });
+        useScrapStore.getState().removeScrap(id);
+        toast.success('삭제됨');
+      } catch (err) {
+        console.error('스크랩 삭제 실패:', err);
+        toast.error('삭제 실패');
+      }
+    },
+    [toast],
+  );
 
   return {
     loading,
