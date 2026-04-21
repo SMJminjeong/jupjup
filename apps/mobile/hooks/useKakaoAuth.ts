@@ -36,12 +36,7 @@ export const useKakaoAuth = () => {
         `&scope=profile_nickname,profile_image` +
         `&state=${encodeURIComponent(returnUrl)}`;
 
-      console.log('[KakaoAuth] callbackUrl:', callbackUrl);
-      console.log('[KakaoAuth] returnUrl:', returnUrl);
-
-      // 브라우저 열기 → 카카오 로그인 → 서버 콜백 → 앱으로 redirect
       const result = await WebBrowser.openAuthSessionAsync(authUrl, returnUrl);
-      console.log('[KakaoAuth] result:', JSON.stringify(result));
 
       if (result.type !== 'success' || !result.url) {
         throw new Error('카카오 로그인이 취소되었습니다');

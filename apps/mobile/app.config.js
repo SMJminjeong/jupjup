@@ -8,11 +8,9 @@ module.exports = {
     slug: 'songjupjup',
     version: '1.0.0',
     orientation: 'portrait',
-    icon: './assets/icon.png',
     scheme: 'songjupjup',
     userInterfaceStyle: 'automatic',
     splash: {
-      image: './assets/splash.png',
       resizeMode: 'contain',
       backgroundColor: '#2563EB',
     },
@@ -25,7 +23,6 @@ module.exports = {
       package: 'com.songmj.songjupjup',
       minSdkVersion: 29,
       adaptiveIcon: {
-        foregroundImage: './assets/adaptive-icon.png',
         backgroundColor: '#2563EB',
       },
     },
