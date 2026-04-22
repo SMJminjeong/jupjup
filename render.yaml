@@ -4,7 +4,7 @@ services:
     runtime: node
     region: singapore
     plan: free
-    buildCommand: npm install -g pnpm && pnpm install --frozen-lockfile && cd apps/server && pnpm build
+    buildCommand: npm install -g pnpm && NODE_ENV=development pnpm install --frozen-lockfile && cd apps/server && pnpm build
     startCommand: node apps/server/dist/index.js
     healthCheckPath: /health
     envVars:
