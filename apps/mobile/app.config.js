@@ -10,7 +10,9 @@ module.exports = {
     orientation: 'portrait',
     scheme: 'songjupjup',
     userInterfaceStyle: 'automatic',
+    icon: './assets/icon.png',
     splash: {
+      image: './assets/splash.png',
       resizeMode: 'contain',
       backgroundColor: '#2563EB',
     },
@@ -23,6 +25,7 @@ module.exports = {
       package: 'com.songmj.songjupjup',
       minSdkVersion: 29,
       adaptiveIcon: {
+        foregroundImage: './assets/adaptive-icon.png',
         backgroundColor: '#2563EB',
       },
     },
@@ -32,6 +35,7 @@ module.exports = {
     },
     extra: {
       apiUrl: process.env.EXPO_PUBLIC_API_URL || 'http://localhost:4000',
+      kakaoRestApiKey: process.env.EXPO_PUBLIC_KAKAO_REST_API_KEY || '',
     },
   },
 };

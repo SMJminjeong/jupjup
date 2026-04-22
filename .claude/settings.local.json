@@ -44,7 +44,10 @@
       "Bash(xargs grep:*)",
       "Bash(node -e ':*)",
       "Bash(ls -la D:/_STUDY/jupjup/apps/mobile/.env*)",
-      "Bash(ls -la D:/_STUDY/jupjup/.env*)"
+      "Bash(ls -la D:/_STUDY/jupjup/.env*)",
+      "Bash(git -C /Users/mindong/project/jupjup/jupjup log --oneline -10)",
+      "Bash(python3 -c \"from PIL import Image; print\\('PIL available'\\)\")",
+      "Bash(export PATH=\"$HOME/.nvm/versions/node/$\\(ls ~/.nvm/versions/node)"
     ]
   }
 }

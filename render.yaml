@@ -1,0 +1,28 @@
+services:
+  - type: web
+    name: jupjup-server
+    runtime: node
+    region: singapore
+    plan: free
+    buildCommand: npm install -g pnpm && pnpm install --frozen-lockfile && cd apps/server && pnpm build
+    startCommand: node apps/server/dist/index.js
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 4000
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_ANON_KEY
+        sync: false
+      - key: SUPABASE_SERVICE_ROLE_KEY
+        sync: false
+      - key: KAKAO_REST_API_KEY
+        sync: false
+      - key: KAKAO_CLIENT_SECRET
+        sync: false
+      - key: JWT_SECRET
+        sync: false
+      - key: SERVER_URL
+        sync: false

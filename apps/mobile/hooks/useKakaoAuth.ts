@@ -11,7 +11,10 @@ const API_URL =
   Constants.expoConfig?.extra?.apiUrl ??
   process.env.EXPO_PUBLIC_API_URL ??
   'http://localhost:4000';
-const KAKAO_REST_API_KEY = '9c60e499183ab85d6f457e992e02e2ce';
+const KAKAO_REST_API_KEY =
+  Constants.expoConfig?.extra?.kakaoRestApiKey ??
+  process.env.EXPO_PUBLIC_KAKAO_REST_API_KEY ??
+  '';
 
 WebBrowser.maybeCompleteAuthSession();
 
