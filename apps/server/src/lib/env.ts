@@ -12,7 +12,7 @@ const envSchema = z.object({
   // Auth
   SERVER_URL: z.string().url().default('http://localhost:4000'),
   KAKAO_REST_API_KEY: z.string().min(1),
-  KAKAO_CLIENT_SECRET: z.string().min(1),
+  KAKAO_CLIENT_SECRET: z.string().optional(),
   JWT_SECRET: z.string().min(16),
 });
 

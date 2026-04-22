@@ -34,7 +34,7 @@ export default async function authRoutes(app: FastifyInstance) {
         body: new URLSearchParams({
           grant_type: 'authorization_code',
           client_id: env().KAKAO_REST_API_KEY,
-          client_secret: env().KAKAO_CLIENT_SECRET,
+          ...(env().KAKAO_CLIENT_SECRET && { client_secret: env().KAKAO_CLIENT_SECRET }),
           redirect_uri: redirectUri,
           code,
         }),
