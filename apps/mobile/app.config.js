@@ -29,6 +29,12 @@ module.exports = {
         backgroundColor: '#2563EB',
       },
     },
+    updates: {
+      url: 'https://u.expo.dev/9a2c5a64-adec-4092-bea6-24ca4a5e095b',
+    },
+    runtimeVersion: {
+      policy: 'appVersion',
+    },
     plugins: ['expo-router', 'expo-secure-store'],
     experiments: {
       typedRoutes: true,
@@ -36,6 +42,9 @@ module.exports = {
     extra: {
       apiUrl: process.env.EXPO_PUBLIC_API_URL || 'http://localhost:4000',
       kakaoRestApiKey: process.env.EXPO_PUBLIC_KAKAO_REST_API_KEY || '',
+      eas: {
+        projectId: '9a2c5a64-adec-4092-bea6-24ca4a5e095b',
+      },
     },
   },
 };
